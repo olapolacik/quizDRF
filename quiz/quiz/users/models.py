@@ -11,6 +11,7 @@ class User(AbstractUser):
     If adding fields that need to be filled at user signup,
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
+    
 
     # First and last name do not cover name patterns around the globe
     name = CharField(_("Name of User"), blank=True, max_length=255)
@@ -43,7 +44,7 @@ class Quizzes(models.Model):
 
     title = models.CharField(max_length=255, default=_("New Quiz"), verbose_name=_("Quiz Title"))
 
-    category = models.ForeignKey(Category, default=1, on_delete=models.DO_NOTHING)
+    category = models.ForeignKey(Category, default=1, on_delete=models.CASCADE)
 
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -78,7 +79,7 @@ class Question(Updated):
     )
 
     quiz = models.ForeignKey(
-        Quizzes, related_name='question', on_delete=models.DO_NOTHING
+        Quizzes, related_name='question', on_delete=models.CASCADE
     )
 
     technique = models.IntegerField(choices=TYPE, default=0, verbose_name=_("Type of question"))
@@ -104,7 +105,7 @@ class Answer(Updated):
         ordering = ["id"]
 
     question = models.ForeignKey(
-        Question, related_name='answer', on_delete=models.DO_NOTHING)
+        Question, related_name='answer', on_delete=models.CASCADE)
     
     answer_text = models.CharField(max_length=255, verbose_name=_("Answer Text"))
     is_right = models.BooleanField(default=False)

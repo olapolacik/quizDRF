@@ -58,6 +58,8 @@ class QuizAdmin(admin.ModelAdmin):
         'title'
     ]
 
+    list_editable = ['title']
+
 
 # Klasa która pozwala na dodawanie odpowiedzi do pytań w panelu admina
 class AnswerInlineModel(admin.TabularInline):
@@ -75,11 +77,14 @@ class QuestionAdmin(admin.ModelAdmin):
         'title',
         'quiz'
     ]
+
     list_display = [
         'title',
         'quiz',
         'date_updated'
     ]
+    
+
     inlines = [
         AnswerInlineModel,
     ]

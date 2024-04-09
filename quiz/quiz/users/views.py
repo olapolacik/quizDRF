@@ -5,12 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
-from quiz.users.models import User
-from quiz.users.api.serializers import QuizSerializer, RandomQuestionSerializer, QuestionSerializer
-from rest_framework.views import APIView
-from rest_framework import generics
 
-from quiz.users.models import Quizzes, Question
+from quiz.users.api.serializers import UserSerializer
+from quiz.users.models import User
 
 
 # Widok użytkownika
@@ -50,24 +47,3 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 user_redirect_view = UserRedirectView.as_view()
 
-
-# API endpoint dla listy quizow
-class Quiz(generics.ListAPIView):
-    serializer_class = QuizSerializer
-    queryset = Quizzes.objects.all()
-
-
-# API endpoint dla losowego pytania
-class RandomQuestion(APIView):
-    def get(self, request, format=None, **kwargs):
-        question = Question.objects.filter(quiz__title=kwargs['topic']).order_by('?')[:1]
-        serializer = RandomQuestionSerializer(question, many=True)
-        return Response(serializer.data)
-
-
-# API endpoint dla pytan w danym quizie
-class QuizQuestion(APIView):
-    def get(self, request, format=None, **kwargs):
-        quiz = Question.objects.filter(quiz__title=kwargs['topic'])
-        serializer = QuestionSerializer(quiz, many=True)
-        return Response(serializer.data)
