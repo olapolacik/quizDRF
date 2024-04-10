@@ -6,53 +6,45 @@ from asgiref.sync import sync_to_async
 from django.db import models
 
 class User(AbstractUser):
-    """
-    Default custom user model for quiz.
-    If adding fields that need to be filled at user signup,
-    check forms.SignupForm and forms.SocialSignupForms accordingly.
-    """
-    
-    # First and last name do not cover name patterns around the globe
+
     name = CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
 
+
     def get_absolute_url(self) -> str:
-        """Get URL for user's detail view.
-
-        Returns:
-            str: URL for user detail.
-
-        """
         return reverse("users:detail", kwargs={"username": self.username})
+
 
 # Model kategorii dla quizu
 class Category(models.Model):
-    name = models.CharField(max_length=255)
+
+    name = models.CharField(max_length=64)
 
     def __str__(self):
         return self.name
 
+
 # Model reprezentujący quiz
 class Quizzes(models.Model):
+
+    title = models.CharField(max_length=64, default=_("New Quiz"), verbose_name=_("Quiz Title"))
+    category = models.ForeignKey(Category, default=default_category, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         verbose_name = _("Quiz")
         verbose_name_plural = _("Quizzes")
         ordering = ['id']
-
-    title = models.CharField(max_length=255, default=_("New Quiz"), verbose_name=_("Quiz Title"))
+    
 
     def default_category():
         default_category, created = Category.objects.get_or_create(id=1, defaults={'name': 'Default Category'})
         return default_category
 
-    category = models.ForeignKey(Category, default=default_category, on_delete=models.CASCADE)
-
-    date_created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
 
 class Updated(models.Model):
 
@@ -63,10 +55,12 @@ class Updated(models.Model):
 
 # Model reprezentujacy pytania
 class Question(Updated):
-    class Meta:
-        verbose_name = _('Question')
-        verbose_name_plural = _('Questions')
-        ordering = ['id']
+
+    technique = models.IntegerField(choices=TYPE, default=0, verbose_name=_("Type of question"))
+    title = models.CharField(max_length=64, verbose_name=_("Title"))
+    difficulty = models.IntegerField(choices=SCALE, default=0, verbose_name=_("Difficulty"))
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Data Created"))
+    is_active = models.BooleanField(default=False, verbose_name=_("Active Status"))
 
     SCALE = (
         (0, _('Fundamental')),
@@ -84,33 +78,29 @@ class Question(Updated):
         Quizzes, related_name='question', on_delete=models.CASCADE
     )
 
-    technique = models.IntegerField(choices=TYPE, default=0, verbose_name=_("Type of question"))
-
-    title = models.CharField(max_length=255, verbose_name=_("Title"))
-
-    difficulty = models.IntegerField(choices=SCALE, default=0, verbose_name=_("Difficulty"))
-
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Data Created"))
-
-    is_active = models.BooleanField(default=False, verbose_name=_("Active Status"))
 
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = _('Question')
+        verbose_name_plural = _('Questions')
+        ordering = ['id']
 
+  
 # Model reprezentujacy odpowiedzi
 class Answer(Updated):
+
+    question = models.ForeignKey(Question, related_name='answer', on_delete=models.CASCADE)
+    answer_text = models.CharField(max_length=64, verbose_name=_("Answer Text"))
+    is_right = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.answer_text
 
     class Meta:
         verbose_name = _("Answer")
         verbose_name_plural = _("Answers")
         ordering = ["id"]
 
-    question = models.ForeignKey(
-        Question, related_name='answer', on_delete=models.CASCADE)
-    
-    answer_text = models.CharField(max_length=255, verbose_name=_("Answer Text"))
-    is_right = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.answer_text
+  

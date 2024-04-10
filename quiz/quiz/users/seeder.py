@@ -6,7 +6,6 @@ def seed():
         default_category, created = Category.objects.get_or_create(id=1, defaults={'name': 'Default Category'})
         return default_category
 
-    # Utwórz Quiz z tą kategorią
     quiz = Quizzes.objects.create(title="Quiz 1", category=default_category())
 
     for i in range(5):
