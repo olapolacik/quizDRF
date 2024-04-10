@@ -19,7 +19,7 @@ class User(AbstractUser):
 # Model kategorii dla quizu
 class Category(models.Model):
 
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -28,8 +28,7 @@ class Category(models.Model):
 # Model reprezentujący quiz
 class Quizzes(models.Model):
 
-    title = models.CharField(max_length=64, default=_("New Quiz"), verbose_name=_("Quiz Title"))
-    category = models.ForeignKey(Category, default=default_category, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, default=_("New Quiz"), verbose_name=_("Quiz Title"))
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -45,6 +44,8 @@ class Quizzes(models.Model):
         default_category, created = Category.objects.get_or_create(id=1, defaults={'name': 'Default Category'})
         return default_category
 
+    category = models.ForeignKey(Category, default=default_category, on_delete=models.CASCADE)
+
 
 class Updated(models.Model):
 
@@ -55,12 +56,6 @@ class Updated(models.Model):
 
 # Model reprezentujacy pytania
 class Question(Updated):
-
-    technique = models.IntegerField(choices=TYPE, default=0, verbose_name=_("Type of question"))
-    title = models.CharField(max_length=64, verbose_name=_("Title"))
-    difficulty = models.IntegerField(choices=SCALE, default=0, verbose_name=_("Difficulty"))
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Data Created"))
-    is_active = models.BooleanField(default=False, verbose_name=_("Active Status"))
 
     SCALE = (
         (0, _('Fundamental')),
@@ -79,6 +74,13 @@ class Question(Updated):
     )
 
 
+    technique = models.IntegerField(choices=TYPE, default=0, verbose_name=_("Type of question"))
+    title = models.CharField(max_length=255, verbose_name=_("Title"))
+    difficulty = models.IntegerField(choices=SCALE, default=0, verbose_name=_("Difficulty"))
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Data Created"))
+    is_active = models.BooleanField(default=False, verbose_name=_("Active Status"))
+
+
     def __str__(self):
         return self.title
 
@@ -92,7 +94,7 @@ class Question(Updated):
 class Answer(Updated):
 
     question = models.ForeignKey(Question, related_name='answer', on_delete=models.CASCADE)
-    answer_text = models.CharField(max_length=64, verbose_name=_("Answer Text"))
+    answer_text = models.CharField(max_length=255, verbose_name=_("Answer Text"))
     is_right = models.BooleanField(default=False)
 
     def __str__(self):
