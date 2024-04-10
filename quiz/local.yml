@@ -34,7 +34,6 @@ services:
       - quiz_local_postgres_data_backups:/backups
     env_file:
       - ./.envs/.local/.postgres
-
   redis:
     image: docker.io/redis:6
     container_name: quiz_local_redis

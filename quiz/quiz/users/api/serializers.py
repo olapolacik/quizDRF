@@ -47,7 +47,6 @@ class RandomQuestionSerializer(serializers.ModelSerializer):
         ]
 
 
-
 # Serializator dla modelu Question, wyświetla pytanie, 
 # listę odpowiedzi i przypisany quiz.
 class QuestionSerializer(serializers.ModelSerializer):

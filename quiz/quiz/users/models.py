@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+from asgiref.sync import sync_to_async
 from django.db import models
 
 class User(AbstractUser):
@@ -12,7 +12,6 @@ class User(AbstractUser):
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
     
-
     # First and last name do not cover name patterns around the globe
     name = CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
@@ -44,14 +43,17 @@ class Quizzes(models.Model):
 
     title = models.CharField(max_length=255, default=_("New Quiz"), verbose_name=_("Quiz Title"))
 
-    category = models.ForeignKey(Category, default=1, on_delete=models.CASCADE)
+    def default_category():
+        default_category, created = Category.objects.get_or_create(id=1, defaults={'name': 'Default Category'})
+        return default_category
+
+    category = models.ForeignKey(Category, default=default_category, on_delete=models.CASCADE)
 
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-# Model 
 class Updated(models.Model):
 
     date_updated = models.DateTimeField(verbose_name=_("Last updated"), auto_now=True)
