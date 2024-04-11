@@ -16,7 +16,6 @@ class User(AbstractUser):
 
 
 # Model kategorii dla quizu
-
 class Category(models.Model):
     name = models.CharField(max_length=255)
 
@@ -24,33 +23,10 @@ class Category(models.Model):
         return self.name
 
 
-# class Quizzes(models.Model):
-#     title = models.CharField(max_length=255, default=_("New Quiz"), verbose_name=_("Quiz Title"))
-#     category = models.ForeignKey(Category, default=1, on_delete=models.DO_NOTHING)
-#     date_created = models.DateTimeField(auto_now_add=True)
-
-#     class Meta:
-#         verbose_name = _("Quiz")
-#         verbose_name_plural = _("Quizzes")
-#         ordering = ['id']
-
-#     def __str__(self):
-#         return self.title
-    
-#     @staticmethod
-#     def default_category():
-#         default_category, created = Category.objects.get_or_create(
-#             id=1, defaults={'name': 'Default Category'}
-#         )
-#         return default_category
-
-  
-
 class Quizzes(models.Model):
 
     title = models.CharField(max_length=255, default=_(
         "New Quiz"), verbose_name=_("Quiz Title"))
-    #category = models.ForeignKey(Category, null=True, on_delete=models.DO_NOTHING)
     category = models.ForeignKey(Category, null=False, blank=False, on_delete=models.CASCADE)
 
 
@@ -108,6 +84,7 @@ class Question(Updated):
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')
         ordering = ['id']
+  
   
 # Model reprezentujacy odpowiedzi
 class Answer(Updated):
