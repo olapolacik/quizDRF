@@ -14,7 +14,7 @@ def generate_quizzes(seeder, number):
 def generate_questions(seeder, number):
     seeder.add_entity(Question, number, {
         'quiz': lambda x: random.choice(Quizzes.objects.all()),
-        'title': lambda x: seeder.faker.sentence(nb_words=6),
+        'title': lambda x: seeder.faker.sentence(nb_words=6), # losowe zdanie skladajace sie z 6 slow
         'difficulty': lambda x: random.randint(1,5),
         'is_active': True,
         'is_multiple': lambda x: random.choice([True, False])
