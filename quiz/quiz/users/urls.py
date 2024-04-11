@@ -15,5 +15,6 @@ urlpatterns = [
     path('r/<str:topic>/', RandomQuestion.as_view(), name='random' ),
     path('q/<str:topic>/', QuizQuestion.as_view(), name='questions' ),
     path('quizzes/search/', QuizSearch.as_view(), name='quiz-search'),
-    
 ]
+
+#silk dodawania duzej ilosc rekordow do bazy
