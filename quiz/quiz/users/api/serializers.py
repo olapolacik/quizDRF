@@ -22,6 +22,7 @@ class QuizSerializer(serializers.ModelSerializer):
             "title"
         ]
 
+
 # Serializator dla modelu Answer, 
 # wyświetla id, tekst odpowiedzi i info. czy odp jest poprawna
 class AnswerSerializer(serializers.ModelSerializer):

@@ -33,7 +33,9 @@ def generate_answers(seeder, number):
 # Funkcja do generowania kategori
 def generate_categories(seeder):
     seeder.add_entity(Category, 1, {
-        'name': 'Default Category',
+        #'name': 'Default Category',
+        'name': lambda x: seeder.faker.sentence(nb_words=3
+        )
     })
 
 
