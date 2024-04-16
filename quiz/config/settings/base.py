@@ -84,10 +84,8 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
-
     "drf_spectacular",
     "django_seed",
-    "silk",
 ]
 
 LOCAL_APPS = [
@@ -152,8 +150,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-
-    "silk.middleware.SilkyMiddleware",
 ]
 
 # STATIC
@@ -253,6 +249,29 @@ DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=Fals
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # See https://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+
+
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": {
+#         "verbose": {
+#             "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
+#         },
+#     },
+
+#     "handlers": {
+#         "console": {
+#              "level": "DEBUG",
+#             "class": "logging.StreamHandler",       
+#             "formatter": "verbose",
+#             "filename": str(BASE_DIR / "django.log")
+#         },
+#     },
+#     "root": {"level": "INFO", "handlers": ["console"]},
+# }
 
 LOGS_DIR = BASE_DIR / "logs"
 os.makedirs(LOGS_DIR, exist_ok=True)
