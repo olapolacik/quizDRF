@@ -12,7 +12,6 @@ class UserSerializer(serializers.ModelSerializer[User]):
             "url": {"view_name": "api:user-detail", "lookup_field": "username"},
         }
 
-
 # Serializator dla modelu Quizzes, wyświetla tytuł quizu
 class QuizSerializer(serializers.ModelSerializer):
 
@@ -21,7 +20,6 @@ class QuizSerializer(serializers.ModelSerializer):
         fields = [
             "title"
         ]
-
 
 # Serializator dla modelu Answer, 
 # wyświetla id, tekst odpowiedzi i info. czy odp jest poprawna

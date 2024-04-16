@@ -3,7 +3,7 @@ from django.urls import path
 from .views import user_detail_view
 from .views import user_redirect_view
 from .views import user_update_view
-from quiz.users.api.views import Quiz, RandomQuestion, QuizQuestion, QuizSearch
+from quiz.users.api.views import Quiz, RandomQuestion, QuizQuestion, QuizWithQuestions
 
 app_name = "users"
 
@@ -14,7 +14,11 @@ urlpatterns = [
     path('', Quiz.as_view(), name='quiz'),
     path('r/<str:topic>/', RandomQuestion.as_view(), name='random' ),
     path('q/<str:topic>/', QuizQuestion.as_view(), name='questions' ),
-    path('quizzes/search/', QuizSearch.as_view(), name='quiz-search'),
+    path('quiz-with-questions/', QuizWithQuestions.as_view(), name='quiz-with-questions'),
 ]
 
-#silk dodawania duzej ilosc rekordow do bazy
+# %20 to znak spacji w url np. 
+# path('r/<str:topic>/', RandomQuestion.as_view(), name='random' ),
+# to bedzie: http://localhost:8000/users/r/New%20Quiz/
+
+
