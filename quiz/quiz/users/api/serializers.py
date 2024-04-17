@@ -14,7 +14,6 @@ class UserSerializer(serializers.ModelSerializer[User]):
 
 # Serializator dla modelu Quizzes, wyświetla tytuł quizu
 class QuizSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Quizzes
         fields = [
@@ -37,7 +36,6 @@ class AnswerSerializer(serializers.ModelSerializer):
 # wyświetla losowe pytanie z listą odpowiedzi
 class RandomQuestionSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(many=True, read_only=True)
-
     class Meta:
         model = Question
         fields = [
@@ -51,7 +49,6 @@ class RandomQuestionSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(many=True, read_only=True)
     quiz = QuizSerializer(read_only=True)
-
     class Meta:
         model = Question
         fields = [

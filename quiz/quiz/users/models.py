@@ -24,7 +24,7 @@ class Category(models.Model):
 
 
 class Quizzes(models.Model):
-
+    users = models.ManyToManyField(User, related_name='quizzes')
     title = models.CharField(max_length=255, default=_(
         "New Quiz"), verbose_name=_("Quiz Title"))
     category = models.ForeignKey(Category, null=False, blank=False, on_delete=models.CASCADE)
@@ -57,21 +57,11 @@ class Updated(models.Model):
 # Model reprezentujacy pytania
 class Question(Updated):
 
-    SCALE = (
-        (1, _('Fundamental')),
-        (2, _('Beginner')),
-        (3, _('Intermediate')),
-        (4, _('Advanced')),
-        (5, _('Expert'))
-    )
-
-
     quiz = models.ForeignKey(
         Quizzes, related_name='question', on_delete=models.CASCADE
     )
 
     title = models.CharField(max_length=255, verbose_name=_("Title"))
-    difficulty = models.IntegerField(choices=SCALE, default=1, verbose_name=_("Difficulty"))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date Created"))
     is_active = models.BooleanField(default=False, verbose_name=_("Active Status"))
     is_multiple = models.BooleanField(default=False, verbose_name=_("Multiple Answers"))

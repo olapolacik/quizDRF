@@ -17,6 +17,9 @@ urlpatterns = [
     path('quiz-with-questions/', QuizWithQuestions.as_view(), name='quiz-with-questions'),
 ]
 
+# naprawic endpoint zeby dziala, 
+
+
 # %20 to znak spacji w url np. 
 # path('r/<str:topic>/', RandomQuestion.as_view(), name='random' ),
 # to bedzie: http://localhost:8000/users/r/New%20Quiz/

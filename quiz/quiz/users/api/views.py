@@ -16,6 +16,7 @@ from quiz.users.models import Quizzes, Question, User
 from .serializers import UserSerializer, QuizSerializer, QuestionSerializer, RandomQuestionSerializer
 
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
+    permission_classes = [AllowAny]
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = "username"
@@ -29,15 +30,15 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
         serializer = UserSerializer(request.user, context={"request": request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
-
-
 class Quiz(generics.ListAPIView):
+    permission_classes = [AllowAny]
 
     serializer_class = QuizSerializer
     queryset = Quizzes.objects.all()
 
 
 class RandomQuestion(APIView):
+    permission_classes = [AllowAny]
 
     def get(self, request, format=None, **kwargs):
         question = Question.objects.filter(quiz__title=kwargs['topic']).order_by('?')[:1]
@@ -46,6 +47,7 @@ class RandomQuestion(APIView):
 
 
 class QuizQuestion(APIView):
+    permission_classes = [AllowAny]
 
     def get(self, request, format=None, **kwargs):
         quiz = Question.objects.filter(quiz__title=kwargs['topic'])
@@ -54,21 +56,29 @@ class QuizQuestion(APIView):
 
 
 class QuizWithQuestions(APIView):
-    """
-    Endpoint API zwracający quizy wraz z ich pytaniami.
-    """
+    permission_classes = [AllowAny]
+
     def get(self, request, format=None):
-        quizzes = Quizzes.objects.all()
+        # Pobierz quizy dla zalogowanego użytkownika
+        quizzes = Quizzes.objects.filter(users=request.user)
         quiz_data = []
 
+        # Iteruj przez wszystkie quizy
         for quiz in quizzes:
+            # Serializuj obiekt quizu
             quiz_serializer = QuizSerializer(quiz)
+            
+            # Pobierz pytania dla danego quizu
             quiz_questions = quiz.question.all()
+            
+            # Serializuj pytania dla danego quizu
             question_serializer = QuestionSerializer(quiz_questions, many=True)
-
+            
+            # Dodaj dane quizu wraz z pytaniami do listy quiz_data
             quiz_data.append({
                 "quiz": quiz_serializer.data,
                 "questions": question_serializer.data
             })
 
+        # Zwróć dane quiz_data jako odpowiedź API
         return Response(quiz_data, status=status.HTTP_200_OK)

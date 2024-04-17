@@ -1,57 +1,46 @@
-# Importy
-from django_seed import Seed
-from .models import Quizzes, Question, Answer, Category
 import random
-
-# Funkcja do generowania quizów
-def generate_quizzes(seeder, number):
-    seeder.add_entity(Quizzes, number, {
-        'title': lambda x: seeder.faker.sentence(nb_words=4),
-        'category': lambda x: Category.objects.get_or_create(name='Default Category')[0],
-    })
+from django.core.management.base import BaseCommand
+from django_seed import Seed
+from quiz.models import Category, Quizzes, Question, Answer
 
 
-# Funkcja do generowania pytań i odpowiedzi
-def generate_questions(seeder, number):
-    seeder.add_entity(Question, number, {
-        'quiz': lambda x: random.choice(Quizzes.objects.all()),
-        'title': lambda x: seeder.faker.sentence(nb_words=6),  # losowe zdanie składające się z 6 słów
-        'difficulty': lambda x: random.randint(1, 5),
-        'is_active': True,
-        'is_multiple': lambda x: random.choice([True, False])
-    })
+class Command(BaseCommand):
+    help = "Seed the database with sample data"
 
-    def _generate_answers_for_question(question):
-        num_answers = 3
-        num_correct_answers = 1
-        if question.is_multiple:
-            num_correct_answers = random.randint(1, num_answers)
+    def add_arguments(self, parser):
+        parser.add_argument('total', type=int, help='Indicates the number of fake quizzes to be created')
 
-        for _ in range(num_answers):
-            is_right = num_correct_answers > 0
-            seeder.add_entity(Answer, 1, {
-                'question': question,
-                'answer_text': lambda x: seeder.faker.sentence(nb_words=3),
-                'is_right': is_right,
-            })
-            num_correct_answers -= 1
+    def handle(self, *args, **kwargs):
+        total = kwargs['total']
+        seeder = Seed.seeder()
 
-    questions = Question.objects.all()[:number]
-    for question in questions:
-        _generate_answers_for_question(question)
+        seeder.add_entity(Category, 5)
+        seeder.add_entity(Quizzes, total, {
+            'title': lambda x: f"Quiz - {seeder.faker.word()}",
+            'category': lambda x: random.choice(Category.objects.all())
+        })
 
+        for quiz in Quizzes.objects.all():
+            for _ in range(5):
+                question = seeder.faker.sentence()
+                is_multiple = seeder.faker.boolean(chance_of_getting_true=50)
 
-# Funkcja do generowania kategorii
-def generate_categories(seeder):
-    seeder.add_entity(Category, 1, {
-        'name': lambda x: seeder.faker.sentence(nb_words=3)
-    })
+                question_obj = Question.objects.create(
+                    quiz=quiz,
+                    title=question,
+                    is_multiple=is_multiple,
+                    is_active=True
+                )
+                for _ in range(3):
+                    answer_text = seeder.faker.word()
+                    is_right = seeder.faker.boolean(chance_of_getting_true=30)
 
-def generate_data(number):
-    seeder = Seed.seeder()
-    generate_categories(seeder)
-    generate_quizzes(seeder, number)
-    generate_questions(seeder, number * 5)
-    inserted_pks = seeder.execute()
-    
-    print(inserted_pks)
+                    Answer.objects.create(
+                        question=question_obj,
+                        answer_text=answer_text,
+                        is_right=is_right
+                    )
+
+        inserted_pks = seeder.execute()
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully created {total} quizzes with questions and answers.'))
