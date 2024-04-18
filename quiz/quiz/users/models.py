@@ -10,10 +10,8 @@ class User(AbstractUser):
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
 
-
     def get_absolute_url(self) -> str:
         return reverse("users:detail", kwargs={"username": self.username})
-
 
 # Model kategorii dla quizu
 class Category(models.Model):
@@ -48,7 +46,6 @@ class Quizzes(models.Model):
         return default_category
 
 class Updated(models.Model):
-
     date_updated = models.DateTimeField(verbose_name=_("Last updated"), auto_now=True)
 
     class Meta:
@@ -69,16 +66,14 @@ class Question(Updated):
     def __str__(self):
         return self.title
 
-
     class Meta:
         verbose_name = _('Question')
         verbose_name_plural = _('Questions')
         ordering = ['id']
-  
-  
+
+
 # Model reprezentujacy odpowiedzi
 class Answer(Updated):
-
     question = models.ForeignKey(Question, related_name='answer', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=255, verbose_name=_("Answer Text"))
     is_right = models.BooleanField(default=False)

@@ -55,30 +55,52 @@ class QuizQuestion(APIView):
         return Response(serializer.data)
 
 
+# class QuizWithQuestions(APIView):
+#     permission_classes = [AllowAny]
+#
+#     def get(self, request, format=None):
+#         # Pobierz quizy dla zalogowanego użytkownika
+#         quizzes = Quizzes.objects.filter(users=request.user)
+#         quiz_data = []
+#
+#         # Iteruj przez wszystkie quizy
+#         for quiz in quizzes:
+#             # Serializuj obiekt quizu
+#             quiz_serializer = QuizSerializer(quiz)
+#
+#             # Pobierz pytania dla danego quizu
+#             quiz_questions = quiz.question.all()
+#
+#             # Serializuj pytania dla danego quizu
+#             question_serializer = QuestionSerializer(quiz_questions, many=True)
+#
+#             # Dodaj dane quizu wraz z pytaniami do listy quiz_data
+#             quiz_data.append({
+#                 "quiz": quiz_serializer.data,
+#                 "questions": question_serializer.data
+#             })
+#
+#         # Zwróć dane quiz_data jako odpowiedź API
+#         return Response(quiz_data, status=status.HTTP_200_OK)
+
+
+
 class QuizWithQuestions(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        # Pobierz quizy dla zalogowanego użytkownika
-        quizzes = Quizzes.objects.filter(users=request.user)
+        quizzes = Quizzes.objects.all()
         quiz_data = []
 
-        # Iteruj przez wszystkie quizy
         for quiz in quizzes:
-            # Serializuj obiekt quizu
             quiz_serializer = QuizSerializer(quiz)
-            
-            # Pobierz pytania dla danego quizu
             quiz_questions = quiz.question.all()
-            
-            # Serializuj pytania dla danego quizu
+
             question_serializer = QuestionSerializer(quiz_questions, many=True)
-            
-            # Dodaj dane quizu wraz z pytaniami do listy quiz_data
+
             quiz_data.append({
                 "quiz": quiz_serializer.data,
                 "questions": question_serializer.data
             })
 
-        # Zwróć dane quiz_data jako odpowiedź API
         return Response(quiz_data, status=status.HTTP_200_OK)
