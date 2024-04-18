@@ -12,7 +12,6 @@ Django runs through each URL pattern, in order,
 and stops at the first one that matches the requested URL,
 matching against path_info.
 """
-
 urlpatterns = [
     path('quiz-with-questions/', QuizWithQuestions.as_view(), name='quiz-with-questions'),
     path("~redirect/", view=user_redirect_view, name="redirect"),
@@ -22,9 +21,6 @@ urlpatterns = [
     path('r/<str:topic>/', RandomQuestion.as_view(), name='random'),
     path('q/<str:topic>/', QuizQuestion.as_view(), name='questions'),
 ]
-
-# naprawic endpoint zeby dziala,
-
 
 # %20 to znak spacji w url np.
 # path('r/<str:topic>/', RandomQuestion.as_view(), name='random' ),
