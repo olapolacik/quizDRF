@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quizzes',
             name='category',
-            field=models.ForeignKey(default=quiz.users.models.Quizzes.default_category, on_delete=django.db.models.deletion.CASCADE, to='users.category'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='users.category'),
         ),
     ]

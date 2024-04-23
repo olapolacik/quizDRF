@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from quiz.users.models import User, Quizzes, Answer, Question
+from quiz.users.models import User, Quizzes, Answer, Question, Category
 
 # Serializator dla modelu User, wyświetla dane i url uzytkownika
 class UserSerializer(serializers.ModelSerializer[User]):
@@ -17,10 +17,15 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quizzes
         fields = [
-            "title"
+            "id", "title", "questions"
         ]
 
-# Serializator dla modelu Answer, 
+    def get_questions(self, obj):
+        questions = obj.questions.all()
+        return QuestionSerializer(questions, many=True).data
+
+
+# Serializator dla modelu Answer,
 # wyświetla id, tekst odpowiedzi i info. czy odp jest poprawna
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +37,7 @@ class AnswerSerializer(serializers.ModelSerializer):
         ]
 
 
-# Serializator dla modelu Question, 
+# Serializator dla modelu Question,
 # wyświetla losowe pytanie z listą odpowiedzi
 class RandomQuestionSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(many=True, read_only=True)
@@ -44,7 +49,7 @@ class RandomQuestionSerializer(serializers.ModelSerializer):
         ]
 
 
-# Serializator dla modelu Question, wyświetla pytanie, 
+# Serializator dla modelu Question, wyświetla pytanie,
 # listę odpowiedzi i przypisany quiz.
 class QuestionSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(many=True, read_only=True)
@@ -55,4 +60,22 @@ class QuestionSerializer(serializers.ModelSerializer):
             "quiz",
             "title",
             "answer"
+        ]
+
+# Serializator dla modelu Category
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = [
+            "name"
+        ]
+
+class QuizCategorySerializer(serializers.ModelSerializer):
+
+    category = CategorySerializer()
+    class Meta:
+        model = Quizzes
+        fields = [
+            "title", "category"
         ]

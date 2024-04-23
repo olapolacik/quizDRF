@@ -3,7 +3,7 @@ from django.urls import path
 from .views import user_detail_view
 from .views import user_redirect_view
 from .views import user_update_view
-from quiz.users.api.views import Quiz, RandomQuestion, QuizQuestion, QuizWithQuestions
+from quiz.users.api.views import Quiz, RandomQuestion, QuizQuestion, QuizWithQuestions, QuizCategoryView
 
 app_name = "users"
 
@@ -12,7 +12,9 @@ Django runs through each URL pattern, in order,
 and stops at the first one that matches the requested URL,
 matching against path_info.
 """
+
 urlpatterns = [
+    path('quiz-category/', QuizCategoryView.as_view(), name='quiz-category'),
     path('quiz-with-questions/', QuizWithQuestions.as_view(), name='quiz-with-questions'),
     path("~redirect/", view=user_redirect_view, name="redirect"),
     path("~update/", view=user_update_view, name="update"),

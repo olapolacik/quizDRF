@@ -1,19 +1,16 @@
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin
-from rest_framework.mixins import RetrieveModelMixin
-from rest_framework.mixins import UpdateModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
-
+from django.db.models import Prefetch
 
 from quiz.users.models import Quizzes, Question, User
 
-from .serializers import UserSerializer, QuizSerializer, QuestionSerializer, RandomQuestionSerializer
+from .serializers import UserSerializer, QuizSerializer, QuestionSerializer, RandomQuestionSerializer, QuizCategorySerializer
 
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
     permission_classes = [AllowAny]
@@ -32,10 +29,8 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
 
 class Quiz(generics.ListAPIView):
     permission_classes = [AllowAny]
-
     serializer_class = QuizSerializer
     queryset = Quizzes.objects.all()
-
 
 class RandomQuestion(APIView):
     permission_classes = [AllowAny]
@@ -45,7 +40,6 @@ class RandomQuestion(APIView):
         serializer = RandomQuestionSerializer(question, many=True)
         return Response(serializer.data)
 
-
 class QuizQuestion(APIView):
     permission_classes = [AllowAny]
 
@@ -54,53 +48,20 @@ class QuizQuestion(APIView):
         serializer = QuestionSerializer(quiz, many=True)
         return Response(serializer.data)
 
-
-# class QuizWithQuestions(APIView):
-#     permission_classes = [AllowAny]
-#
-#     def get(self, request, format=None):
-#         # Pobierz quizy dla zalogowanego użytkownika
-#         quizzes = Quizzes.objects.filter(users=request.user)
-#         quiz_data = []
-#
-#         # Iteruj przez wszystkie quizy
-#         for quiz in quizzes:
-#             # Serializuj obiekt quizu
-#             quiz_serializer = QuizSerializer(quiz)
-#
-#             # Pobierz pytania dla danego quizu
-#             quiz_questions = quiz.question.all()
-#
-#             # Serializuj pytania dla danego quizu
-#             question_serializer = QuestionSerializer(quiz_questions, many=True)
-#
-#             # Dodaj dane quizu wraz z pytaniami do listy quiz_data
-#             quiz_data.append({
-#                 "quiz": quiz_serializer.data,
-#                 "questions": question_serializer.data
-#             })
-#
-#         # Zwróć dane quiz_data jako odpowiedź API
-#         return Response(quiz_data, status=status.HTTP_200_OK)
-
-
-
-class QuizWithQuestions(APIView):
+class QuizWithQuestions(generics.ListAPIView):
     permission_classes = [AllowAny]
+    serializer_class = QuizSerializer
 
-    def get(self, request, format=None):
+    def get_queryset(self):
+        return Quizzes.objects.prefetch_related("questions").all()
+
+
+class QuizCategoryView(APIView):
+    def get(self, request, *args, **kwargs):
         quizzes = Quizzes.objects.all()
-        quiz_data = []
+        data = []
 
         for quiz in quizzes:
-            quiz_serializer = QuizSerializer(quiz)
-            quiz_questions = quiz.question.all()
-
-            question_serializer = QuestionSerializer(quiz_questions, many=True)
-
-            quiz_data.append({
-                "quiz": quiz_serializer.data,
-                "questions": question_serializer.data
-            })
-
-        return Response(quiz_data, status=status.HTTP_200_OK)
+            serializer = QuizCategorySerializer(quiz)
+            data.append(serializer.data)
+        return Response(data, status=status.HTTP_200_OK)
